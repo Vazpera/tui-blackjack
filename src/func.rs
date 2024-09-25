@@ -9,9 +9,12 @@ impl Default for Value {
 }
 
 impl Value {
-    pub fn value(self, val: i32) -> Self {
-        Self {
-            value: val
-        }
+    pub fn set_value(mut self, val: i32) -> Self {
+        self.value = val;
+        self
+    }
+
+    pub fn get_value(&self)-> i32 {
+        self.value
     }
 }
