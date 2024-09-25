@@ -70,6 +70,26 @@ pub struct Card {
     pub rank: Rank,
 }
 
+impl Card {
+    pub fn suit(mut self, suit: Suit) -> Self {
+        self.suit = suit;
+        self
+    }
+    pub fn rank(mut self, rank: Rank) -> Self {
+        self.rank = rank;
+        self
+    }
+}
+
+impl Default for Card {
+    fn default() -> Self {
+        Self {
+            suit: Suit::Spade,
+            rank: Rank::Ace,
+        }
+    }
+}
+
 impl std::fmt::Display for Card {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}{}", self.suit, self.rank)
@@ -80,7 +100,7 @@ pub fn new_deck() -> Vec<Card> {
     let mut cards: Vec<Card> = Vec::new();
     for suit in Suit::iter() {
         for rank in Rank::iter() {
-            cards.push(Card { suit, rank })
+            cards.push(Card::default().suit(suit).rank(rank))
         }
     }
     cards
