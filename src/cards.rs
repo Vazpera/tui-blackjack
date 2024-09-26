@@ -1,3 +1,4 @@
+use ratatui::{style::Stylize, widgets::Widget};
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
@@ -15,10 +16,10 @@ impl std::fmt::Display for Suit {
             f,
             "{}",
             match self {
-                Suit::Club => "♣",
-                Suit::Spade => "♠",
-                Suit::Diamond => "♦",
-                Suit::Heart => "♥",
+                Suit::Club => "♣".black().to_string(),
+                Suit::Spade => "♠".black().to_string(),
+                Suit::Diamond => "♦".red().to_string(),
+                Suit::Heart => "♥".red().to_string(),
             }
         )
     }
@@ -63,14 +64,43 @@ impl std::fmt::Display for Rank {
         )
     }
 }
-
 #[derive(Debug, Clone, Copy)]
+pub enum Value {
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten,
+    Ace,
+}
+
 pub struct Card {
     pub suit: Suit,
     pub rank: Rank,
 }
 
 impl Card {
+    pub fn value(&self) -> Value {
+        match self.rank {
+            Rank::Ace => Value::Ace,
+            Rank::Two => Value::Two,
+            Rank::Three => Value::Three,
+            Rank::Four => Value::Four,
+            Rank::Five => Value::Five,
+            Rank::Six => Value::Six,
+            Rank::Seven => Value::Seven,
+            Rank::Eight => Value::Eight,
+            Rank::Nine => Value::Nine,
+            Rank::Ten => Value::Ten,
+            Rank::Jack => Value::Ten,
+            Rank::Queen => Value::Ten,
+            Rank::King => Value::Ten,
+        }
+    }
     pub fn suit(mut self, suit: Suit) -> Self {
         self.suit = suit;
         self
@@ -78,6 +108,9 @@ impl Card {
     pub fn rank(mut self, rank: Rank) -> Self {
         self.rank = rank;
         self
+    }
+    pub fn new(rank: Rank, suit: Suit) -> Self {
+        Self::default().rank(rank).suit(suit)
     }
 }
 
