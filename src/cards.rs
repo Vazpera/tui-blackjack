@@ -1,3 +1,4 @@
+use rand::Rng;
 use ratatui::{style::Stylize, widgets::Widget};
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
@@ -64,43 +65,13 @@ impl std::fmt::Display for Rank {
         )
     }
 }
-#[derive(Debug, Clone, Copy)]
-pub enum Value {
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-    Ten,
-    Ace,
-}
-
+#[derive(Clone, Copy)]
 pub struct Card {
     pub suit: Suit,
     pub rank: Rank,
 }
 
 impl Card {
-    pub fn value(&self) -> Value {
-        match self.rank {
-            Rank::Ace => Value::Ace,
-            Rank::Two => Value::Two,
-            Rank::Three => Value::Three,
-            Rank::Four => Value::Four,
-            Rank::Five => Value::Five,
-            Rank::Six => Value::Six,
-            Rank::Seven => Value::Seven,
-            Rank::Eight => Value::Eight,
-            Rank::Nine => Value::Nine,
-            Rank::Ten => Value::Ten,
-            Rank::Jack => Value::Ten,
-            Rank::Queen => Value::Ten,
-            Rank::King => Value::Ten,
-        }
-    }
     pub fn suit(mut self, suit: Suit) -> Self {
         self.suit = suit;
         self
@@ -138,3 +109,19 @@ pub fn new_deck() -> Vec<Card> {
     }
     cards
 }
+///
+/// choose_card is a function
+pub fn choose_card(mut deck: Vec<Card>, random: bool) -> (Vec<Card>, Option<Card>) {
+    let mut rng = rand::thread_rng();
+    if deck.len() == 0 {
+        return (deck, None)
+    }
+    let card: usize = match random {
+        true => rng.gen_range(0..deck.clone().len()),
+        false => 0
+    };
+
+    let removed_card = deck.remove(card);
+    return (deck, Some(removed_card));
+}
+

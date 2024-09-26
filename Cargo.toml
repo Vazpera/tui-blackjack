@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 crossterm = { version = "0.28.1", features = ["event-stream"] }
 futures = "0.3.30"
+rand = "0.8.5"
 ratatui = "0.28.1"
 strum = "0.26.3"
 strum_macros = "0.26.4"
