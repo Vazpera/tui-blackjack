@@ -65,10 +65,18 @@ impl std::fmt::Display for Rank {
         )
     }
 }
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub enum CardValue {
+    None,
+    Single(u32),
+    Double(u32, u32)
+}
+
 #[derive(Clone, Copy)]
 pub struct Card {
     pub suit: Suit,
     pub rank: Rank,
+    pub hidden: bool,
 }
 
 impl Card {
@@ -83,6 +91,24 @@ impl Card {
     pub fn new(rank: Rank, suit: Suit) -> Self {
         Self::default().rank(rank).suit(suit)
     }
+    pub fn value(&self, is_holder: bool) -> CardValue {
+        match (self.hidden, is_holder, self.rank) {
+            (true, false, _) => CardValue::None,
+            (_, _, Rank::Two) => CardValue::Single(2),
+            (_, _, Rank::Three) => CardValue::Single(3),
+            (_, _, Rank::Four) => CardValue::Single(4),
+            (_, _, Rank::Five) => CardValue::Single(5),
+            (_, _, Rank::Six) => CardValue::Single(6),
+            (_, _, Rank::Seven) => CardValue::Single(7),
+            (_, _, Rank::Eight) => CardValue::Single(8),
+            (_, _, Rank::Nine) => CardValue::Single(9),
+            (_, _, Rank::Ten) => CardValue::Single(10),
+            (_, _, Rank::Jack) => CardValue::Single(10),
+            (_, _, Rank::Queen) => CardValue::Single(10),
+            (_, _, Rank::King) => CardValue::Single(10),
+            (_, _, Rank::Ace) => CardValue::Double(1, 11),
+        }
+    }
 }
 
 impl Default for Card {
@@ -90,6 +116,7 @@ impl Default for Card {
         Self {
             suit: Suit::Spade,
             rank: Rank::Ace,
+            hidden: false,
         }
     }
 }
@@ -109,8 +136,6 @@ pub fn new_deck() -> Vec<Card> {
     }
     cards
 }
-///
-/// choose_card is a function
 pub fn choose_card(mut deck: Vec<Card>, random: bool) -> (Vec<Card>, Option<Card>) {
     let mut rng = rand::thread_rng();
     if deck.len() == 0 {
@@ -125,3 +150,28 @@ pub fn choose_card(mut deck: Vec<Card>, random: bool) -> (Vec<Card>, Option<Card
     return (deck, Some(removed_card));
 }
 
+pub fn get_hand_total(deck: Vec<Card>, is_holder: bool)->CardValue {
+    return CardValue::None;
+}
+
+#[test]
+fn test_card_values() {
+    for rank_type in Rank::iter() {
+       let mock_card = Card::default().rank(rank_type);
+       match rank_type  {
+           Rank::Two   => assert_eq!(CardValue::Single(    2), mock_card.value(true)),
+           Rank::Three => assert_eq!(CardValue::Single(    3), mock_card.value(true)),
+           Rank::Four  => assert_eq!(CardValue::Single(    4), mock_card.value(true)),
+           Rank::Five  => assert_eq!(CardValue::Single(    5), mock_card.value(true)),
+           Rank::Six   => assert_eq!(CardValue::Single(    6), mock_card.value(true)),
+           Rank::Seven => assert_eq!(CardValue::Single(    7), mock_card.value(true)),
+           Rank::Eight => assert_eq!(CardValue::Single(    8), mock_card.value(true)),
+           Rank::Nine  => assert_eq!(CardValue::Single(    9), mock_card.value(true)),
+           Rank::Ten   => assert_eq!(CardValue::Single(   10), mock_card.value(true)),
+           Rank::Jack  => assert_eq!(CardValue::Single(   10), mock_card.value(true)),
+           Rank::Queen => assert_eq!(CardValue::Single(   10), mock_card.value(true)),
+           Rank::King  => assert_eq!(CardValue::Single(   10), mock_card.value(true)),
+           Rank::Ace   => assert_eq!(CardValue::Double(1, 11), mock_card.value(true)),
+       }
+    }
+}
