@@ -4,8 +4,7 @@ use cards::*;
 fn main() {
     let mut deck = new_deck();
     let mut new_deck: Vec<Card> = Vec::new();
-    while let (altered_deck, Some(new_card)) = choose_card(deck, true) {
-        deck = altered_deck;
+    while let Some(new_card) = choose_card(&mut deck, true) {
         new_deck.push(new_card);
     }
     let lines = new_deck.clone()

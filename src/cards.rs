@@ -111,8 +111,8 @@ impl Card {
             Five => Some(Single(5)),
             Six => Some(Single(6)),
             Seven => Some(Single(7)),
-            Eight =>  Some(Single(8)),
-            Nine =>  Some(Single(9)),
+            Eight => Some(Single(8)),
+            Nine => Some(Single(9)),
             Ten => Some(Single(10)),
             Jack => Some(Single(10)),
             Queen => Some(Single(10)),
@@ -146,10 +146,10 @@ pub fn new_deck() -> Vec<Card> {
     }
     cards
 }
-pub fn choose_card(mut deck: Vec<Card>, random: bool) -> (Vec<Card>, Option<Card>) {
+pub fn choose_card(deck: &mut Vec<Card>, random: bool) -> Option<Card> {
     let mut rng = rand::thread_rng();
     if deck.len() == 0 {
-        return (deck, None)
+        return None
     }
     let card: usize = match random {
         true => rng.gen_range(0..deck.clone().len()),
@@ -157,7 +157,7 @@ pub fn choose_card(mut deck: Vec<Card>, random: bool) -> (Vec<Card>, Option<Card
     };
 
     let removed_card = deck.remove(card);
-    return (deck, Some(removed_card));
+    return Some(removed_card);
 }
 
 
