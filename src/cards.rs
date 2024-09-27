@@ -66,10 +66,18 @@ impl std::fmt::Display for Rank {
     }
 }
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub enum CardValue {
-    None,
+pub enum SingleOrDouble {
     Single(u32),
-    Double(u32, u32)
+    Double(u32, u32),
+}
+
+type CardValue = Option<SingleOrDouble>;
+
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub enum HandValue {
+    Hidden,
+    PartiallyHidden(SingleOrDouble),
+    Shown(SingleOrDouble),
 }
 
 #[derive(Clone, Copy)]
@@ -91,22 +99,24 @@ impl Card {
     pub fn new(rank: Rank, suit: Suit) -> Self {
         Self::default().rank(rank).suit(suit)
     }
-    pub fn value(&self, is_holder: bool) -> CardValue {
-        match (self.hidden, is_holder, self.rank) {
-            (true, false, _) => CardValue::None,
-            (_, _, Rank::Two) => CardValue::Single(2),
-            (_, _, Rank::Three) => CardValue::Single(3),
-            (_, _, Rank::Four) => CardValue::Single(4),
-            (_, _, Rank::Five) => CardValue::Single(5),
-            (_, _, Rank::Six) => CardValue::Single(6),
-            (_, _, Rank::Seven) => CardValue::Single(7),
-            (_, _, Rank::Eight) => CardValue::Single(8),
-            (_, _, Rank::Nine) => CardValue::Single(9),
-            (_, _, Rank::Ten) => CardValue::Single(10),
-            (_, _, Rank::Jack) => CardValue::Single(10),
-            (_, _, Rank::Queen) => CardValue::Single(10),
-            (_, _, Rank::King) => CardValue::Single(10),
-            (_, _, Rank::Ace) => CardValue::Double(1, 11),
+    pub fn get_value(&self, is_holder: bool)->CardValue {
+        use SingleOrDouble::*;
+        use Rank::*;
+        if !is_holder && self.hidden { return None };
+        match self.rank {
+            Ace => Some(Double(1, 11)),
+            Two => Some(Single(2)),
+            Three => Some(Single(3)),
+            Four => Some(Single(4)),
+            Five => Some(Single(5)),
+            Six => Some(Single(6)),
+            Seven => Some(Single(7)),
+            Eight =>  Some(Single(8)),
+            Nine =>  Some(Single(9)),
+            Ten => Some(Single(10)),
+            Jack => Some(Single(10)),
+            Queen => Some(Single(10)),
+            King => Some(Single(10)),
         }
     }
 }
@@ -150,28 +160,27 @@ pub fn choose_card(mut deck: Vec<Card>, random: bool) -> (Vec<Card>, Option<Card
     return (deck, Some(removed_card));
 }
 
-pub fn get_hand_total(deck: Vec<Card>, is_holder: bool)->CardValue {
-    return CardValue::None;
-}
 
 #[test]
-fn test_card_values() {
-    for rank_type in Rank::iter() {
-       let mock_card = Card::default().rank(rank_type);
-       match rank_type  {
-           Rank::Two   => assert_eq!(CardValue::Single(    2), mock_card.value(true)),
-           Rank::Three => assert_eq!(CardValue::Single(    3), mock_card.value(true)),
-           Rank::Four  => assert_eq!(CardValue::Single(    4), mock_card.value(true)),
-           Rank::Five  => assert_eq!(CardValue::Single(    5), mock_card.value(true)),
-           Rank::Six   => assert_eq!(CardValue::Single(    6), mock_card.value(true)),
-           Rank::Seven => assert_eq!(CardValue::Single(    7), mock_card.value(true)),
-           Rank::Eight => assert_eq!(CardValue::Single(    8), mock_card.value(true)),
-           Rank::Nine  => assert_eq!(CardValue::Single(    9), mock_card.value(true)),
-           Rank::Ten   => assert_eq!(CardValue::Single(   10), mock_card.value(true)),
-           Rank::Jack  => assert_eq!(CardValue::Single(   10), mock_card.value(true)),
-           Rank::Queen => assert_eq!(CardValue::Single(   10), mock_card.value(true)),
-           Rank::King  => assert_eq!(CardValue::Single(   10), mock_card.value(true)),
-           Rank::Ace   => assert_eq!(CardValue::Double(1, 11), mock_card.value(true)),
-       }
+fn check_card_value() {
+    for rank in Rank::iter() {
+        use Rank::*;
+        use SingleOrDouble::*;
+        let mock_card = Card::default().rank(rank);
+        match mock_card.rank {
+            Ace => assert_eq!(mock_card.get_value(true), Some(Double(1, 11))), 
+           Two => assert_eq!(mock_card.get_value(true), Some(Single(2))),
+           Three => assert_eq!(mock_card.get_value(true), Some(Single(3))),
+           Four => assert_eq!(mock_card.get_value(true), Some(Single(4))),
+           Five => assert_eq!(mock_card.get_value(true), Some(Single(5))),
+           Six => assert_eq!(mock_card.get_value(true), Some(Single(6))),
+           Seven => assert_eq!(mock_card.get_value(true), Some(Single(7))),
+           Eight => assert_eq!(mock_card.get_value(true), Some(Single(8))),
+           Nine => assert_eq!(mock_card.get_value(true), Some(Single(9))),
+           Ten => assert_eq!(mock_card.get_value(true), Some(Single(10))),
+           Jack => assert_eq!(mock_card.get_value(true), Some(Single(10))),
+           Queen => assert_eq!(mock_card.get_value(true), Some(Single(10))),
+           King => assert_eq!(mock_card.get_value(true), Some(Single(10))),
+        }
     }
 }
